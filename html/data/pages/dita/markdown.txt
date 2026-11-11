@@ -1,0 +1,100 @@
+====== Markdown ======
+
+In DITA Open Toolkit (DITA-OT), you can apply conditional text to Markdown files using the Lightweight DITA (LwDITA) syntax. You apply conditions using the @data-props attribute in your Markdown and process them using a standard DITAVAL file.
+
+===== 1. Apply Attributes in Markdown =====
+
+
+To conditionally include or exclude sections of text, use Pandoc-style attribute blocks wrapped in braces {.data-props="attribute_name='value'"} immediately after the paragraph or element.markdown
+
+<code markdown>
+This paragraph is visible to everyone.
+
+This paragraph is only for advanced users. {.data-props="audience='expert'"}
+</code>
+
+
+
+===== 2. Create the DITAVAL Filter File =====
+
+
+Create an XML file with the .ditaval extension to define which conditional values should be included or excluded during the build.xml.
+
+<code xml>
+<?xml version="1.0" encoding="UTF-8"?>
+<val>
+    <prop action="exclude" att="audience" val="novice"/>
+    <prop action="include" att="audience" val="expert"/>
+</val>
+</code>
+
+===== 3. Build with the Filter File =====
+
+
+When running your build from the command line, pass the path to your .ditaval file using the --filter parameter along with your target format.bash
+
+<code bash>
+dita --input=my_map.ditamap --format=html5 --filter=my_rules.ditaval
+</code>
+
+===== first.md =====
+<code markdown>
+# First Section
+
+This document shows the use of conditional text in markdown files.
+</code>
+
+===== second.md =====
+<code  markdown>
+# Second Section
+
+This is the second section.
+</code>
+
+===== conditions.md =====
+<code markdown>
+# Conditions
+
+This is a test.
+
+This paragraph is visible to <span audience="novice">novice</span><span audience="expert">expert</span> users.
+
+This paragraph is only for novice users. {audience="novice"}
+
+This paragraph is only for advanced users. {audience="expert"}
+
+
+## Table {audience="expert"}
+| Header 1 | Header 2 | Header 3 |
+| -------- | -------- | -------- |
+| Row 1    | Data A   | Data B   |
+| Row 2    | Data C   | Data D   |
+</code>
+
+===== my_map.ditamap =====
+
+<code xml>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE map PUBLIC "-//OASIS//DTD DITA Map//EN" "map.dtd">
+<map>
+    <title>User Guide</title>
+
+
+    <topicref href="first.md" format="markdown">
+        <topicref href="conditions.md" format="markdown"/>
+    </topicref>
+
+
+    <topicref href="second.md" format="markdown" audience="novice" />
+</map>
+</code>
+
+===== my_rules.ditaval =====
+
+<code xml>
+<?xml version="1.0" encoding="UTF-8"?>
+<val>
+    <prop action="include" att="audience" val="expert"/>
+    <prop action="exclude" att="audience" val="novice"/>
+</val>
+</code>

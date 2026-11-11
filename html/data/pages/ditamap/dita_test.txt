@@ -1,0 +1,15 @@
+<code>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE topic PUBLIC "-//OASIS//DTD DITA Topic//EN" "topic.dtd">
+<topic id="general_sample">
+  <title>Overview of Solar Panels</title>
+  <shortdesc>Solar panels convert sunlight into electricity using photovoltaic cells.</shortdesc>
+  <body>
+    <p>Solar energy is a clean and renewable power source. Panels are installed on roofs or open land to capture maximum daylight.</p>
+    <section id="benefits">
+      <title>Main Benefits</title>
+      <p>Using solar power lowers electricity bills and reduces carbon footprints.</p>
+    </section>
+  </body>
+</topic>
+</code>

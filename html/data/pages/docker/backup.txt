@@ -1,0 +1,28 @@
+====== Docker Backup ======
+
+Back up
+<code>
+# 1. Stop the application container using the volume
+docker stop <container_name>
+
+# 2. Run the backup command
+docker run --rm \
+  -v <volume_name>:/source:ro \
+  -v $(pwd):/backup \
+  alpine tar czf /backup/volume_backup.tar.gz -C /source .
+
+# 3. Restart your application container
+docker start <container_name>
+</code>
+
+Restore
+<code>
+# 1. Create a new target volume if it doesn't already exist
+docker volume create <new_volume_name>
+
+# 2. Execute the restore command
+docker run --rm \
+  -v <new_volume_name>:/target \
+  -v $(pwd):/backup:ro \
+  alpine sh -c "rm -rf /target/* && tar xzf /backup/volume_backup.tar.gz -C /target"
+</code>

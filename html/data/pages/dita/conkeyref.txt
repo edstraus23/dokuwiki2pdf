@@ -1,0 +1,79 @@
+====== DITA @conkeyref Examples and Usage ======
+
+Content Key References (%%@conkeyref%%) in DITA allow you to reuse elements indirectly. Instead of pointing directly to a specific file path (like a standard %%@conref%%), you point to a **Key Definition** configured in your DITA Map. This makes your content modular and easier to reuse across different outputs or products.
+
+[[drupal:drupal_dita_pdf|Using Drupal and DITA OT to Create a PDF File]]
+
+---
+
+====== 1. Basic Concept: @conref vs. @conkeyref ======
+
+  * **Standard conref (Direct Path):**
+    <code><p conref="reusable_topics/warnings.dita#safety/bolt_warning"/></code>
+    * *Problem:* The file path is hardcoded. If you move the source file, the link breaks.
+  * **Conkeyref (Indirect via Keys):**
+    <code><p conkeyref="product_variables/bolt_warning"/></code>
+    * *Advantage:* No file paths are used in the topic text. The mapping happens at the DITA Map level.
+
+---
+
+====== 2. Step-by-Step Example Implementation ======
+
+To implement a %%@conkeyref%% workflow, you need three components: a warehouse file, a key definition in your map, and the reference inside your topic.
+
+===== Step A: Create the Warehouse File (The Source) =====
+Create a topic that holds your reusable elements. Give each element a unique ''id''.
+
+File name: %%product_warehouse.dita%%
+<code>
+<topic id="warehouse">
+  <title>Reusable Product Info</title>
+  <body>
+    <p id="bolt_warning">Don't overtighten the bolts, as it may cause stripping.</p>
+    <ph id="product_name">Super-Toaster 3000</ph>
+  </body>
+</topic>
+</code>
+
+===== Step B: Define the Key in the DITA Map =====
+In your main map file, associate a key name (e.g., ''product_variables'') with your warehouse file. Wrapping it in a ''resource-only'' topic group ensures it doesn't get printed in the final table of contents.
+
+File name: %%main_map.ditamap%%
+<code>
+<map>
+  <title>Product Manual</title>
+  <topicgroup processing-role="resource-only">
+    <keydef keys="product_variables" href="product_warehouse.dita" format="dita" type="topic"/>
+  </topicgroup>
+  
+  <topicref href="installation_guide.dita"/>
+</map>
+</code>
+
+===== Step C: Reference the Keyed Content in your Topic =====
+Inside your documentation topic, point to the content using the syntax: **%%[key_name]/[element_id]%%**
+
+File name: %%installation_guide.dita%%
+<code>
+<topic id="install">
+  <title>Installing the Bracket</title>
+  <body>
+    <p>Thank you for purchasing the <ph conkeyref="product_variables/product_name"/>.</p>
+    <note type="warning">
+      <p conkeyref="product_variables/bolt_warning"/>
+    </note>
+  </body>
+</topic>
+</code>
+
+---
+
+====== 3. Key Use Cases for Technical Writing ======
+
+  * **White Labeling / Variables:** Swapping out product names or company names depending on which DITA Map is processed by the DITA Open Toolkit (DITA-OT).
+  * **Regionalization:** Maintaining separate warehouse files for US vs. UK metrics or localized legal text, swapping the %%<keydef>%% target without touching the core source files.
+  * **Complex Elements:** Reusing entire sections, steps, or phrase formatting (such as subscripts) that regular %%@keyref%% text replacement cannot handle cleanly.
+
+====== Reference ======
+
+[[https://www.google.com/search?q=example+of+dita+ot+conkeyref&rlz=1C1HKFL_enUS1214US1214&oq=example+of+dita+ot+conkeyref&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIHCAEQABjvBTIKCAIQABiiBBiJBTIHCAMQABjvBdIBCTMxMDU2ajBqOagCBrACAfEFQVwYSAdvfD0&sourceid=chrome&source=chrome.ob&ie=UTF-8]]

@@ -1,0 +1,412 @@
+====== Docker Containers ======
+
+===== Portainer =====
+
+
+A must have for running Docker. Shows all your containers, images, and volumes. It lets you stop and start the containers and shows the ports that they are running on.
+
+docker-compose.yml:
+<code yaml>
+services:
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:lts
+    restart: no
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    ports:
+      - 9443:9443
+      #- 8000:8000 # Optional: only needed if you plan to use the Edge Agent
+volumes:
+  portainer_data:
+    name: portainer_data
+
+</code>
+
+
+===== Homepage =====
+
+Lets you set links to services and websites that you use frequently.  Uses configuration files for setting the links, backgrounds, and icons.
+
+docker-compose.yml:
+<code yaml>
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    ports:
+      - 3001:3000 # Map host port 3000 to container port 3000
+    volumes:
+      - ./config:/app/config # Mount a local directory for configuration files
+        #- /var/run/docker.sock:/var/run/docker.sock:ro # Optional: for Docker integrations (read-only)
+    environment:
+      #PUID: 1000 # Optional: your user ID
+      #PGID: 1000 # Optional: your group ID
+      HOMEPAGE_ALLOWED_HOSTS: localhost:3001
+    restart: no
+</code>
+
+settings.yaml
+<code yaml>
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/configs/settings/
+#
+#
+title: My Homepage
+
+background: https://images.unsplash.com/photo-1502790671504-542ad42d5189?auto=format&fit=crop&w=2560&q=80 # <----- add this line
+
+providers:
+  openweathermap: openweathermapapikey
+  weatherapi: weatherapiapikey
+</code>
+
+services.yaml:
+<code yaml>
+--
+# For configuration options and examples, please see:
+# https://gethomepage.dev/configs/services/
+#
+# icons found here https://github.com/walkxcode/dashboard-icons
+
+- My First Group:
+    - Portainer Service:
+        icon: portainer-alt.png
+        href: https://localhost:9443
+        description: Portainer
+    - Drupal Service:
+        href: http://localhost:8080
+        description: Drupal 11 (Docker Container)
+    - My Wordpress:
+        icon: wordpress.png
+        href: http://localhost:8888
+        description: Wordpress
+- My Second Group:
+    - My Github Page:
+        icon: github.png
+        href: https://github.com/edstraus23/
+        description: This is my Github page
+- My Third Group:
+    -  FreshRSS Service:
+        icon: freshrss.png
+        href: http://localhost:8083
+        description: FreshRSS service
+    -  DockuWiki Service:
+        icon: dokuwiki.png
+        href: http://localhost:8889
+        description: DokuWiki service
+</code>
+
+Icon Search Website:
+https://dashboardicons.com/
+
+bookmarks.yaml:
+<code yaml>
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/configs/bookmarks
+
+- Developer:
+    - Github:
+        - abbr: GH
+          href: https://github.com/
+    - Dashboard Icons:
+        - abbr: DI
+          href: https://dashboardicons.com
+
+- Social:
+    - Reddit:
+        - abbr: RE
+          href: https://reddit.com/
+    - Yahoo:
+        - abbr: YH
+          href: https://mail.yahoo.com/
+
+- Entertainment:
+    - YouTube:
+        - abbr: YT
+          href: https://youtube.com/
+</code>
+
+
+
+===== Drupal =====
+
+Drupal is a content management system (CMS) that allows you create dynamic web sites. It can be somewhat difficult to install because it has a lot of dependencies. Using a docker container to perform the install makes the installation process easier.
+
+Also, see Using Drupal and DITA OT to Create a PDF File for a Drupal use case.
+
+Docker-compose.yml:
+<code yaml>
+# Database username: postgres
+# Database password: example
+# ADVANCED OPTIONS; Database host: postgres
+#
+
+version: '3.1'
+
+services:
+
+  drupal:
+    image: my-drupal:latest
+    ports:
+      - 8080:80
+    volumes:
+      - modules:/var/www/html/modules
+      - profiles:/var/www/html/profiles
+      - themes:/var/www/html/themes
+      # this takes advantage of the feature in Docker that a new anonymous
+      # volume (which is what we're creating here) will be initialized with the
+      # existing content of the image at the same location
+      - sites:/var/www/html/sites
+    restart: none
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: example
+    restart: none
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  modules:
+  profiles:
+  themes:
+  sites:
+  pgdata:
+</code>
+
+I created my own image (see Dockerfile that follows) to include Composer and the REST UI module.
+
+Dockerfile:
+<code>
+FROM drupal:latest
+
+# Install Composer
+COPY --from=composer/composer:latest-bin /composer /usr/local/bin/composer
+
+# Install REST UI module
+RUN composer require drupal/restui
+
+ENV DRUSH_VERSION 8.4.9
+RUN curl -L --silent https://github.com/drush-ops/drush/releases/download/${DRUSH_VERSION}/drush.phar \
+  > /usr/local/bin/drush && chmod +x /usr/local/bin/drush
+</code>
+
+Here's the command to build the docker image:
+<code>
+docker build -t my-drupal:latest .
+</code>
+
+Use ''PostgreSQl'' as the database type.
+
+Use ''postgres'' as the database name.
+
+Use ''postgres'' as the database user name.
+
+Use ''example'' as the database password.
+
+Use ''postgres'' as the host.
+
+Use ''5432'' as the port number.
+
+===== WordPress=====
+
+Easy to use content management system for developing web sites.
+
+<code yaml>
+version: '3.7'
+
+volumes:
+  wp-data:
+networks:
+  wp-back:
+
+services:
+
+  db:
+    image: mysql:5.7
+    volumes:
+      - wp-data:/var/lib/mysql
+    environment:
+       MYSQL_ROOT_PASSWORD: rootPassword
+       MYSQL_DATABASE: wordpress
+       MYSQL_USER: wp-user
+       MYSQL_PASSWORD: wp-pass
+    ports:
+      - 8889:3306
+    networks:
+      - wp-back
+
+  phpmyadmin:
+    depends_on:
+      - db
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: db
+      MYSQL_USER: wp-user
+      MYSQL_PASSWORD: wp-pass
+      MYSQL_ROOT_PASSWORD: rootPassword
+    ports:
+      - 3002:80
+    networks:
+      - wp-back
+
+wordpress:
+    depends_on:
+      - db
+    image: wordpress:latest
+    ports:
+      - 8888:80
+      - 443:443
+    environment:
+       WORDPRESS_DB_HOST: db
+       WORDPRESS_DB_USER: wp-user
+       WORDPRESS_DB_PASSWORD: wp-pass
+    volumes:
+      - ./wordpress-files:/var/www/html
+    container_name: wordpress-site
+    networks:
+      - wp-back
+</code>
+If needed, you can log into phpmyadmin on port 3002 using the user name and password provided in the docker-compose.xml file. You may need to change the url address in the wp_options table if your local IP address changes.
+
+View the following video to set up your site:
+[[https://wordpress.com/support/courses/create-your-website/]]
+
+Using the twenty twenty-three theme.
+===== Panadoc =====
+
+
+Allows conversion from one documentation format to another (for example, markdown to pdf file). 
+
+Examples:
+
+//From markdown to PDF format//
+
+<code>
+docker run --rm --volume "$(pwd):/data" --user "$(id -u):$(id -g)" pandoc/latex -f markdown -t pdf -o drupal_dita_pdf.pdf -i drupal_dita_pdf.md
+</code>
+
+//From dokuwiki to markdown format//
+
+<code>
+docker run --rm --volume "$(pwd):/data" --user "$(id -u):$(id -g)" pandoc/latex -f dokuwiki -t markdown -o drupal_dita_pdf.md -i drupal_dita_pdf.txt
+</code>
+===== Heimdall =====
+ 
+
+Similar to homepage but configuration files are not needed.
+
+<code yaml>
+  heimdall:
+    image: lscr.io/linuxserver/heimdall:latest
+    container_name: heimdall
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - ./config:/config
+    ports:
+      - 8085:80
+      - 447:443
+    networks:
+      - my-bridge-network
+    restart: no
+
+networks:
+    my-bridge-network:
+      driver: bridge
+</code>
+===== DokuWiki =====
+
+Easy to use text-based wiki.
+
+docker-compose.yml:
+
+<code yaml>
+version: '3'
+services:
+  dokuwiki:
+    container_name: dokuwiki
+    image: php:8.2-apache-bookworm
+    restart: unless-stopped
+    networks:
+      - dokuwiki
+    ports:
+      - '8889:80'
+    volumes:
+      - ./html:/var/www/html
+
+networks:
+  dokuwiki:
+</code>
+NOTE: php:8.2-apache-bookworm was changed from php:7-apache-bullseye. The latest version of dokuwiki requires PHP 8.
+
+See https://loganmarchione.com/2022/03/the-best-way-to-run-dokuwiki-in-docker/ for installation instructions.
+
+  * Exec into the container.
+<code>
+docker exec -it dokuwiki /bin/bash
+</code>
+  * Download DokuWiki.
+<code>
+cd /var/www/html
+curl --remote-name https://download.dokuwiki.org/src/dokuwiki/dokuwiki-stable.tgz
+tar -xzvf dokuwiki-stable.tgz --strip-components=1
+rm dokuwiki-stable.tgz
+chown -R www-data:www-data /var/www/
+</code>
+  * Go to http://your_docker_server_IP:8889/install.php and the DokuWiki install page displays. Make sure to create and admin account.
+
+Installed Dokuwiki extension plugins:
+
+  * **Bookcreator Plugin** by  Gerrit Uitslag (previous: Luigi Micco) 2024-02-07 - Allow to make a book (PDF, ODT, HTML or text) from selected pages
+  * **dw2markdown plugin** by  i-net software 2025-11-04 - Render a DW page to Markdown
+  * **Dw2Pdf plugin** by  Andreas Gohr and Luigi Micco 2023-11-25 - DokuWiki to PDF converter
+  * **EditTable plugin** by  Andreas Gohr 2023-01-14 - Provide a custom editor for tables
+  * **PDF-Tools for dw2pdf** by  Gero Gothe 2021-11-11 - Additional features for PDF-Generation (requires dw2pdf)
+
+===== FreshRSS =====
+
+A self-hosted reader that aggregates popular feeds from news sites, blogs, and podcasts.
+
+<code yaml>
+services:
+  freshrss:
+    image: freshrss/freshrss:latest
+    container_name: freshrss
+    ports:
+      - "8083:80"
+    volumes:
+      # This line is crucial for data persistence
+      - ./freshrss_data:/var/www/FreshRSS/data
+    environment:
+      - PUID=1000 # Example PUID, check your system's user ID
+      - PGID=1000 # Example PGID, check your system's group ID
+      - TZ=America/New_York
+    restart: no
+</code>
+
+===== Linkding =====
+
+Bookmark manager that you host on your home server. It has an excellent search feature.
+
+<code yaml>
+services:
+  linkding:
+    container_name: "${LD_CONTAINER_NAME:-linkding}"
+    image: sissbruecker/linkding:latest
+    ports:
+      - "${LD_HOST_PORT:-9090}:9090"
+    volumes:
+      - "${LD_HOST_DATA_DIR:-./data}:/etc/linkding/data"
+    env_file:
+      - .env
+    restart: no
+</code>
+

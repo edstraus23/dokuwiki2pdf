@@ -1,0 +1,23 @@
+====== DokuWiki ======
+
+docker.compose.yml:
+
+
+<code yaml>
+version: '3'
+services:
+  dokuwiki:
+    container_name: dokuwiki
+    image: php:7-apache-bullseye
+    restart: unless-stopped
+    networks:
+      - dokuwiki
+    ports:
+      - '8889:80'
+    volumes:
+      - ./html:/var/www/html
+
+networks:
+  dokuwiki:
+</code>
+

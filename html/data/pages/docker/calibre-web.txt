@@ -1,0 +1,78 @@
+====== Calibre-web Docker Container ======
+
+Want to access all your ebooks in one place? Calibre-Web is a web interface used to browse, read, and download eBooks from an existing Calibre database. This post walks you through the complete installation and setup process on Ubuntu.
+
+{{:docker:calibre-web.jpeg?400|}}
+
+===== Install Calibre =====
+
+Follow these steps to install Calibre and automatically generate the library and metadata.db file.
+
+<code>
+# Install Calibre (the desktop application that manages the library)
+sudo apt install -y calibre
+
+# Initialize an empty library - any calibredb command against a new
+# directory will create the library and metadata.db file
+calibredb list --with-library /opt/calibre-web/books
+</code>
+
+
+===== Set Up Docker Container =====
+
+Inside a directory (e.g., ~/docker/calibre-web/), create a docker-compose.yml
+
+<code yaml>
+services:
+  calibre-web:
+    image: lscr.io/linuxserver/calibre-web:latest
+    container_name: calibre-web
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - DOCKER_MODS=linuxserver/mods:universal-calibre # Enables e-book conversion tools
+    volumes:
+      - ./config:/config
+      - /opt/calibre-web/books:/books
+    ports:
+      - 8083:8083
+    restart: unless-stopped
+ </code>
+
+===== Run Docker Container =====
+
+docker compose up -d
+
+===== Set Ownership =====
+
+Perform these commands to set proper ownership for the books folder:
+
+<code>
+docker exec -it calibre-web bash
+
+chown -R abc:abc books
+
+# Exit bash shell.
+</code>
+
+
+
+===== Restart Docker Container =====
+
+Restart the docker container to apply changes.
+
+<code>
+docker compose down
+
+docker compose up -d
+</code>
+
+===== Set Calibre Database Directory =====
+
+Open the web browser and navigate to localhost:8083 or <your_ip_address>:8083.
+
+When configuring Calibre-web, set your Calibre Database Directory to ///books//.
+
+[[https://oneuptime.com/blog/post/2026-03-02-how-to-set-up-calibre-web-for-ebook-management-on-ubuntu/view]]
+

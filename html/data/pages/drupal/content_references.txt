@@ -1,0 +1,92 @@
+====== How to Link Content Types in Drupal Using Entity Reference ======
+
+{{:drupal:drupal_reference.jpg?400|}}
+
+I created a web application using the Pode.web framework to add media (TV shows, movies, books, albums), people (friends, family, authors, actors), and events (concerts, sports, vacations) via web forms. All data is written to a local SQLite database, establishing connections between entities. See [[https://hypot2noose.blogspot.com/2026/06/powershell-pode-web-app-github.html]].
+
+I want to provide the same functionality, but I want to use Drupal instead for the implementation. While Pode.Web is highly user-friendly, implementing this in Drupal will likely require much less development effort.
+
+I initially assumed that connecting entities (content types) in Drupal would be difficult, but it is easily handled via native Entity Reference fields. This native feature directly links nodes to form relationships. This guide walks through a practical test case to show you exactly how to set it up.
+
+===== Test Case =====
+
+To document a test case where Bart and Homer Simpson attend a Green Day concert together, Drupal requires two content types:
+
+**Event Content Type:**
+| Name                                                |
+| Location |
+| People Attended (will link to People content type)  |
+
+**People Content Type:**
+| Name                                                |
+| email |
+
+
+===== Create Content Types and Reference Other Content Type =====
+
+
+First, let's create the People content type:
+
+  - Go to **Structure > Content Types**.
+  - Click **Add Content Type**.
+  - For **Name**, enter //People//.
+  - For Description, enter //Use for adding information about people//.
+  - Click **Save and Manage fields**.
+  - Click **Create a new field** to open the selection window.
+  - Click **Plain text**.
+  - For the **Label**, enter //Name//.
+  - For **Field Type**, choose //Short Text//.
+  - Click **Continue**.
+  - Click **Save**.
+  - Click **Create a new field** to open the selection window.
+  - Click **Email**.
+  - For the **Label**, enter //email//.
+  - Click **Continue**.
+  - Click **Save**.
+
+Next, let's create the Event content type:
+
+  - Go to **Structure > Content Types**.
+  - Click **Add Content Type**.
+  - For **Name**, enter //Event//.
+  - For Description, enter //Use for adding information about an event//.
+  - Click **Save and Manage fields**.
+  - Click **Re-use an existing field**, select //field_name//, and click **Re-use**. Save the field settings on the next screen.
+  - Click **Create a new field** to open the selection window.
+  - Click **Plain text**.
+  - For the **Label**, enter //Location//.
+  - For **Field Type**, choose //Short Text//.
+  - Click **Continue**.
+  - Click **Save**.
+  - Click  **Create a new field** to open the selection window.
+  - Click **Reference** to open the selection window.
+  - For **Label**, enter //People Attended//.
+  - For **Allowed Number of Values**, select //Unlimited//.
+  - For **Content Type**, select //People//.
+  - Click **Save**.
+
+NOTE: Under **Manage Form Display**, you can change the widget type to //Select list// or to //Check boxes/radio buttons//.
+
+===== Populate the Forms =====
+
+Fill out the form fields for Bart Simpson as shown below:
+
+  - Go to **Content**.
+  - Click **Add Content**, then select //People//.
+  - Enter information as follows:
+{{:drupal:screenshot_2026-07-06_191955.png?400|}}
+
+Repeat the above steps for Homer Simpson.
+
+Fill out the event details, linking the attendees:
+
+  - Go to **Content**.
+  - Click **Add Content**, then select //Event//.
+  - Enter information as follows:
+{{:drupal:screenshot_2026-07-06_192221.png?400|}}
+
+Note: The **People Attended** field will now automatically autocomplete or list the names you previously created under the **People** content type.
+
+===== Reference =====
+
+[[https://share.google/aimode/DroeZnGhkAZ5Ip5IL]]

@@ -1,0 +1,47 @@
+====== Using Metasploitable 2 and Kali Linux for Security Assessments ======
+
+
+Setting up a local penetration testing lab using Docker involves creating a shared network, running a Metasploitable 2 target container, and launching a Kali Linux container to execute security assessments.
+
+===== Initial Network and Container Setup =====
+
+Create a custom Docker network:
+''docker network create pentest''
+
+Run Metasploitable 2:
+<code bash>
+docker run -it --name=metasploitable2 --net=pentest tleemcjr/metasploitable2 /bin/sh
+</code>
+
+Run with host network: Use docker run --network host -it tleemcjr/metasploitable2:latest sh -c "/bin/services.sh && bash" so the container shares your local network stack.Start internal services: Once inside the container shell, type services.sh to boot up the vulnerable daemons.
+
+Run Kali Linux:
+<code bash>
+docker run -it --name=kali --net=pentest kalilinux/kali-rolling /bin/bash
+</code>
+
+<code>
+sudo apt update && sudo apt install nmap -
+
+apt install net-tools
+</code>
+
+===== Lab Environment Configuration =====
+
+Ensure both containers are attached to the ''pentest'' network so they can communicate locally in an isolated environment.
+
+Inside the running Kali container, update package lists and install the Metasploit framework toolset:
+
+===== Running Framework Tools =====
+
+==== Executing Metasploit ====
+
+Launch the framework inside your Kali container by typing ''msfconsole''.
+
+Verify network connectivity to the Metasploitable 2 container using an internal ping or diagnostic network tools from the Kali prompt to identify open ports and active services.
+
+Review discovered services on Metasploitable 2, configure target parameters, and analyze service responses.
+
+===== Resources =====
+
+Video Walkthrough: [[https://www.youtube.com/watch?v=O8FQO17yEKw|How To: Setup Kali and Metasploitable2 on Docker Containers]] (Hackers Academy)

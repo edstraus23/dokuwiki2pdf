@@ -1,0 +1,13 @@
+====== Misc ======
+
+===== PDF Numbering =====
+
+[[https://github.com/oxygenxml/dita-ot-numbering]]
+
+<code>
+~/dita-ot-4.4/bin/dita install dita-ot-numbering-master.zip
+
+~/dita-ot-4.4/bin/dita --input=blogs.ditamap --format=pdf2  --output=out -Dnumbers-before-title=yes  --numbers-before-title=yes --numbers-before-title-depth=3
+</code>
+
+[[https://share.google/aimode/QySaKDHYU4sq8XrNB]]

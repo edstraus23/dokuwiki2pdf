@@ -1,0 +1,55 @@
+<code>
+<?xml version='1.0' encoding='utf-8'?><!DOCTYPE bookmap PUBLIC "-//OASIS//DTD DITA BookMap//EN" "../dtd/bookmap/dtd/bookmap.dtd">
+<bookmap id="test1">
+
+<booktitle>
+<mainbooktitle>Complilation of Posts</mainbooktitle>
+<booktitlealt>By: Eric Strausbaugh - 08/16/2026</booktitlealt>
+</booktitle>
+
+<frontmatter>
+<booklists><toc/></booklists>
+
+<!-- :DW:html/data/pages/blogs:legal: -->
+<notices href="topics/legal.md" format="markdown" toc="no"/>
+<!-- :DW:html/data/pages/blogs:preface: -->
+<preface href="topics/preface.md" format="markdown" toc="no" />
+
+</frontmatter>
+
+
+<!-- :IMG:html/data/media/blogs:topics/blogs: -->
+<!-- :IMG:html/data/media/drupal:topics/drupal: -->
+<!-- :IMG:html/data/media/dita:topics/dita: -->
+<!-- :IMG:html/data/media/docker:topics/docker: -->
+<!-- :IMG:html/data/media/cybersecurity:topics/cybersecurity: -->
+<!-- :IMG:html/data/media/dns:topics/dns: -->
+<!-- :IMG:html/data/media/ditamap:topics/ditamap: -->
+
+
+<!-- :DV:html/data/pages/ditamap:my_ditaval: -->
+<!-- :THM:html/data/pages/ditamap:my_theme: -->
+
+
+<!-- :DW:html/data/pages/docker:intro_docker: -->
+<chapter href="topics/intro_docker.md" format="markdown">
+<!-- :DW:html/data/pages/drupal:drupal_dita_pdf: -->
+ <topicref href="topics/drupal_dita_pdf.md" format="markdown"></topicref>
+<!-- :DW:html/data/pages/docker:containers: -->
+  <topicref href="topics/containers.md" format="markdown"></topicref>
+<!-- :DW:html/data/pages/docker:backup_blog: -->
+  <topicref href="topics/backup_blog.md" format="markdown"></topicref>  
+</chapter>
+<!-- :DW:html/data/pages/blogs:intro: -->
+<chapter href="topics/intro.md" format="markdown">
+<!-- :DW:html/data/pages/dita:conref: -->
+  <topicref href="topics/conref.md" format="markdown"></topicref>
+<!-- :DW:html/data/pages/cybersecurity:kalilinux: -->
+  <topicref href="topics/kalilinux.md" format="markdown"></topicref>
+<!-- :DW:html/data/pages/dns:adguard_home: -->
+  <topicref href="topics/adguard_home.md" format="markdown"></topicref>
+<!-- :DW:html/data/pages/blogs:dokuwiki_flow: -->
+  <topicref href="topics/dokuwiki_flow.md" format="markdown"></topicref>   
+</chapter>
+</bookmap>
+</code>

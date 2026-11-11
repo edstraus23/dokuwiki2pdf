@@ -1,0 +1,71 @@
+====== Misc ======
+
+
+database: drupal11
+
+root - ziggy00
+
+User name: admin  User password: JFwJky39fC
+
+<code>
+docker run -it my-drupal2 bash
+
+composer update "drupal/*" --with-all-dependencies
+
+composer update drupal/core --with-all-dependencies
+
+composer outdated "drupal/*"
+
+composer update drupal/module_name --with-all-dependencies
+
+composer update drupal/core-recommended drupal/core-composer-scaffold drupal/core-project-message --with-all-dependencies
+</code>
+
+
+1. Apply Database UpdatesMany module or core updates require changes to the database structure. You must execute Drupal's database update script.If you use Drush (highly recommended), run this from your host terminal to execute it inside the container:
+
+<code bash>
+docker run exec my-drupal2 /usr/local/bin/drush updatedb
+</code>
+
+Use code with caution.
+
+(Note: Replace web (my-drupal2) with your specific Drupal container service name if it differs, such as drupal or app.)
+
+If you do not have Drush installed, you must log in to your site as an administrator and visit: https://your-site-domain.com.
+
+2. Clear and Rebuild the Cache
+
+Drupal heavily caches code, routing, and plugins. To ensure the container registers the updated code, clear the cache:
+
+<code bash>
+docker compose exec web drush cache:rebuild
+</code>
+
+Use code with caution.
+
+Alternatively, clear it via the Drupal admin UI by navigating to Configuration > Development > Performance and clicking "Clear all caches".
+
+3. Import Configuration (If Applicable)If your update includes modified configuration files (for example, if you are synchronizing code from a Git repository or another developer), import those changes into the database:
+
+<code bash>
+docker compose exec web drush config:import
+</code>
+
+Use code with caution.
+
+4. Commit and Track Changes
+
+Composer updates modify two essential tracking files in your project root. To prevent your container from breaking on the next build, commit these files to your Git repository:composer.jsoncomposer.lock
+
+5. Rebuild Your Docker Image (For Production)
+
+If you are doing this in a local development environment with a bind mount (where your local files are synced directly into the container), your container sees the changes instantly.
+
+However, if you are preparing this code for a production deployment, you must rebuild your Docker image so the updated vendor and core directories are baked into the new build:
+
+<code bash>
+docker compose build --no-cache
+</code>
+
+Use code with caution.

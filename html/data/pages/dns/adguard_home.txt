@@ -1,0 +1,44 @@
+====== Adguard Home on Windows 11======
+
+Adguard Home uses DNS to block ads and tracking software. I previously installed Adguard Home on Ubuntu and using Docker containers. The Ubuntu install worked well, but I had trouble getting the Docker install to work, especially on my Windows 11 laptop.
+
+For this install, I used the standard Windows 11 install, and it went pretty smoothly.
+
+Download Adguard Home from here:
+
+[[https://github.com/AdguardTeam/AdGuardHome/releases/tag/v0.107.76]]
+
+Unzip the file and save it in //C:\Program Files\Adguard Home//.
+
+Open a command prompt window and run as administrator. Perform the following commands:
+
+<code>
+cd "C:\Program Files\AdGuardHome"
+AdGuardHome.exe -s install
+</code>
+
+Ensure that the service is running with following command:
+
+<code>
+AdGuardHome.exe -s status
+</code>
+
+  - Open a web browser and go to the temporary AdGuard Home Web Portal setup page (http://127.0.0.1:3000 or http://[Your-PC-IP-Address]:3000).
+  - Follow the setup wizard to choose your network interfaces and set up your admin username and password.
+
+Now, you can log into the AdGuard Home Web Portal (http://127.0.0.1 or http://[Your-PC-IP-Address]. No longer on port 3000).
+
+To start blocking ads:
+
+  - On your Windows 11 PC from the //Control Panel//, change //View by// to //Small icons//.
+  - Select //Network and & Sharing Center > Change Adapter Settings//.
+  - Right click on your active connection and select //Properties//.
+  - Double click on //Internet Protocol Version 4.// Change the settings to //Use the following DNS server addresses// and enter 127.0.0.1 or [Your-PC-IP-Address] as your Preferred DNS server.
+
+For system-wide protection, log into your router and change your DHCP/DNS settings to point to your Windows 11 machine’s local IP address.
+
+I choose to just make the DNS change on my local Windows 11 computer. If it's working, you should see data on the Dashboard for DNS Queries and Blocked by Filters.
+
+See also:
+  * [[https://adguard-dns.io/kb/adguard-home/getting-started/#installation]]
+  * [[https://share.google/aimode/5c3lkOXjh7QeJCpOb]]
